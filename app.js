@@ -10,6 +10,9 @@ const app = express()
 // Define the port number on which the server will listen
 const port = 3000
 
+// Adding to read json bodies
+app.use(express.json())
+
 // Define a route for the root URL ('/') that responds with 'Hello World!'
 app.get('/', (req, res) => {
   res.send('Hello World!!!')
