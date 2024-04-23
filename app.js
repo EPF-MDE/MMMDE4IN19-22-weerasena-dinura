@@ -25,26 +25,67 @@ app.get('/students', (req, res) => {
   res.send(students);
 });
 
-//Reading CSV
-app.get('/read-csv', (req, res) => {
-  // Define the file path
-  const filePath = __dirname + '/student_info.csv';
-
-  // Read the CSV file
-  fs.readFile(filePath, 'utf8', (err, data) => {
+//Reading CSV by splitting the data into differnt rows while also categorising into name and scool.
+app.get("/student_info-csv", (req, res) => {
+  fs.readFile("./students_info.csv", "utf8", (err, data) => {
     if (err) {
-      console.error('Error reading CSV file:', err);
-      res.status(500).send('Internal Server Error');
-      return;
+      // If there's an error reading the file, send an error response
+      return res.status(500).send("Error reading CSV file");
     }
     
-    // Log the content of the CSV file
-    console.log('CSV File Content:');
-    console.log(data);
+    // Split the CSV data into rows
+    const rows = data.split("\n");
+    
+    // Initialize an array to store the parsed CSV data
+    const parsedData = [];
 
-    res.send('CSV file content logged to console.');
+    // Extract headers from the first row
+    const headers = rows[0].trim().split(";");
+
+    // Loop through each row starting from index 1 (skip header row)
+    for (let i = 1; i < rows.length; i++) {
+      // Split the row into cells
+      const cells = rows[i].trim().split(";");
+
+      // Create an object to store the cell values
+      const student = {};
+
+      // Assign values to object properties using headers
+      for (let j = 0; j < headers.length; j++) {
+        student[headers[j].toLowerCase()] = cells[j];
+      }
+
+      // Push the student object to the parsed data array
+      parsedData.push(student);
+    }
+
+    // Send the parsed CSV data as the response
+    res.json(parsedData);
   });
 });
+
+// Creating new instances and saving to csv
+app.post('/students/create', (req, res) => {
+  // Extract student data from request body
+  const { name, school } = req.body;
+
+  // Create a CSV string for the new student
+  const newStudentCSV = `${name};${school}\n`;
+
+  // Append the new student data to the CSV file
+  fs.appendFile('./students_info.csv', newStudentCSV, (err) => {
+    if (err) {
+      // If there's an error appending to the file, send an error response
+      return res.status(500).send('Error saving student data');
+    }
+
+    // Send "Student saved" response
+    res.send('Student saved');
+  });
+});
+
+
+
 
 // Start the Express server and listen for incoming connections on the specified port
 app.listen(port, () => {
