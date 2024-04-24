@@ -7,6 +7,8 @@ const fs = require("fs")
 // Create an Express application instance
 const app = express()
 
+const path = require('path');
+
 // Define the port number on which the server will listen
 const port = 3000
 
@@ -65,6 +67,19 @@ app.get("/student_info-csv", (req, res) => {
     // Send the parsed CSV data as the response
     res.json(parsedData);
   });
+});
+
+
+// Defining endpoint for the index (/) route
+app.get('/', (req, res) => {
+  // Send the home.html file
+  res.sendFile(path.join(__dirname, './views/home.html'));
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 // Creating new instances and saving to csv
