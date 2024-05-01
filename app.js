@@ -1,27 +1,32 @@
 // Import the Express.js framework
-const express = require('express')
+const express = require('express');
 
-//Importing fs to read the file
-const fs = require("fs")
+// Importing fs to read the file
+const fs = require("fs");
 
 // Create an Express application instance
-const app = express()
+const app = express();
 
 const path = require('path');
 
+// Set up EJS template engine
+app.set('views', './views');
+app.set('view engine', 'ejs');
+
 // Define the port number on which the server will listen
-const port = 3000
+const PORT = process.env.PORT || 3000;
 
 // Adding to read json bodies
-app.use(express.json())
+app.use(express.json());
 
-// Define a route for the root URL ('/') that responds with 'Hello World!'
+// Defining endpoint for the index (/) route
 app.get('/', (req, res) => {
-  res.send('Hello World!!!')
-})
+  // Send the home.html file
+  res.sendFile(path.join(__dirname, './views/home.html'));
+});
 
-app.get('/students', (req, res) => {
-   const students = [
+app.get('/api/students', (req, res) => {
+  const students = [
     { name: "Dewmith WEERE", school: "EPF" },
     { name: "Harry Potter", school: "Poudlard" }
   ];
@@ -29,8 +34,8 @@ app.get('/students', (req, res) => {
   res.send(students);
 });
 
-//Reading CSV by splitting the data into differnt rows while also categorising into name and school.
-app.get("/student_info-csv", (req, res) => {
+// Reading CSV by splitting the data into different rows while also categorizing into name and school.
+app.get("/api/students_info-csv", (req, res) => {
   fs.readFile("./students_info.csv", "utf8", (err, data) => {
     if (err) {
       // If there's an error reading the file, send an error response
@@ -69,20 +74,51 @@ app.get("/student_info-csv", (req, res) => {
 });
 
 
-// Defining endpoint for the index (/) route
-app.get('/', (req, res) => {
-  // Send the home.html file
-  res.sendFile(path.join(__dirname, './views/home.html'));
+// Define HTML page rendering route
+app.get('/students', (req, res) => {
+  fs.readFile("./students_info.csv", "utf8", (err, data) => {
+    if (err) {
+      // If there's an error reading the file, send an error response
+      return res.status(500).send("Error reading CSV file");
+    }
+    
+    // Split the CSV data into rows
+    const rows = data.split("\n");
+    
+    // Initialize an array to store the parsed CSV data
+    const parsedData = [];
+
+    // Extract headers from the first row
+    const headers = rows[0].trim().split(";");
+
+    // Loop through each row starting from index 1 (skip header row)
+    for (let i = 1; i < rows.length; i++) {
+      // Split the row into cells
+      const cells = rows[i].trim().split(";");
+
+      // Create an object to store the cell values
+      const student = {};
+
+      // Assign values to object properties using headers
+      for (let j = 0; j < headers.length; j++) {
+        student[headers[j].toLowerCase()] = cells[j];
+      }
+
+      // Push the student object to the parsed data array
+      parsedData.push(student);
+    }
+    
+    // Render the "students" view and pass the parsed data as "students" array
+    res.render("students", { students: parsedData });
+  });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+
+
+
 
 // Creating new instances and saving to csv
-app.post('/students/create', (req, res) => {
+app.post('/api/students/create', (req, res) => {
   // Extract student data from request body
   const { name, school } = req.body;
 
@@ -101,13 +137,7 @@ app.post('/students/create', (req, res) => {
   });
 });
 
-
-
-
 // Start the Express server and listen for incoming connections on the specified port
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-  console.log(`Server is running`)
-  
-
-})
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
