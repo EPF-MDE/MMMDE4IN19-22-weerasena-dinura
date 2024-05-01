@@ -16,6 +16,9 @@ app.set('view engine', 'ejs');
 // Middleware to parse urlencoded form data
 app.use(express.urlencoded({ extended: true }));
 
+// For CSS files
+app.use(express.static('public'));
+
 
 // Define the port number on which the server will listen
 const PORT = process.env.PORT || 3000;
