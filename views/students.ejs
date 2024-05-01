@@ -1,15 +1,41 @@
+<!DOCTYPE html>
 <html>
-<head>
-    <title>Students</title>
-</head>
+
 <body>
-    <h1>Students</h1>
-    <ul>
-        <% students.forEach(function(student) { %>
-            <li><%= student.name %> | <%= student.school %></li>
-        <% }); %>
-    </ul>
+    <div class="header">
+        <h1>Students</h1>
+    </div>
+    <div class="body-content">
+        <ul>
+            <% students.forEach(function(student) { %>
+                <li><strong><%= student.name %> | <%= student.school %></strong></li>
+            <% }); %>
+        </ul>
+    </div>
+    <style>
+        body {
+            background-color: rgb(81, 81, 228);
+            color: black;
+            margin: 0 auto; /* Center the content horizontally */
+            max-width: 800px; /* Limit the width of the content */
+            padding: 20px; /* Optional: Add some padding around the content */
+        }
+        .header,
+        .body-content {
+            background-color: lightgrey; /* Set the background color for heading and body */
+            padding: 10px; /* Add some padding for better appearance */
+        }
+        .header h1 {
+            margin: 0; /* Remove default margin from the heading */
+        }
+        .body-content ul {
+            list-style-type: none; /* Remove default bullet points from the list */
+            padding: 0; /* Remove default padding from the list */
+        }
+        .body-content ul li {
+            font-weight: bold; /* Make the student information bold */
+            margin-bottom: 5px; /* Add some space between each student information */
+        }
+    </style>
 </body>
 </html>
-
-
