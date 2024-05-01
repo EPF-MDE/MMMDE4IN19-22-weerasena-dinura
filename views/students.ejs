@@ -21,9 +21,10 @@
     <div class="body-content">
         <ul>
             <% students.forEach(function(student) { %>
-            <li><strong><%= student.name %> | <%= student.school %></strong></li>
-            <% }); %>
+                <li><%= student.name %> | <%= student.school %></li>
+            <% }) %>
         </ul>
+        
     </div>
 </body>
 
