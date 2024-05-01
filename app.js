@@ -13,6 +13,10 @@ const path = require('path');
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
+// Middleware to parse urlencoded form data
+app.use(express.urlencoded({ extended: true }));
+
+
 // Define the port number on which the server will listen
 const PORT = process.env.PORT || 3000;
 
@@ -115,8 +119,6 @@ app.get('/students', (req, res) => {
 
 
 
-
-
 // Creating new instances and saving to csv
 app.post('/api/students/create', (req, res) => {
   // Extract student data from request body
@@ -136,6 +138,36 @@ app.post('/api/students/create', (req, res) => {
     res.send('Student saved');
   });
 });
+
+
+// Define GET endpoint to render the form
+app.get('/students/create', (req, res) => {
+  // Render the create-student.ejs view to display the form
+  res.render('create-student');
+});
+
+// Define POST endpoint to handle form submission
+app.post('/students/create', (req, res) => {
+  // Extract student data from request body
+  console.log(req.body);
+  const { name, school } = req.body;
+
+  // Create a CSV string for the new student
+  const newStudentCSV = `\n${name};${school}`;
+
+  // Append the new student data to the CSV file
+  fs.appendFile('./students_info.csv', newStudentCSV, (err) => {
+    if (err) {
+      // If there's an error appending to the file, send an error response
+      return res.status(500).send('Error saving student data');
+    }
+
+    // Redirect back to the form to add another student
+    res.redirect('/students/create');
+  });
+});
+
+
 
 // Start the Express server and listen for incoming connections on the specified port
 app.listen(PORT, () => {
