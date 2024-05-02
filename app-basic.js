@@ -5,14 +5,9 @@ const app = express();
 
 app.use(
   basicAuth({
-    users: { admin: "supersecret" },
+    users: { admin: "supersecret2" },
     challenge: true,
   })
 );
-
-app.use("/",(req,res) => {
-  res.send("Success")
-});
-
 
 module.exports = app;
