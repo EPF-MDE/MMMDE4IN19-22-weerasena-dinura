@@ -1,21 +1,52 @@
 // Import required modules
 const express = require('express');
+const bcrypt = require('bcrypt');
 const basicAuth = require('express-basic-auth'); // Import express-basic-auth
 const fs = require('fs');
 const path = require('path');
 const csvModule = require('./csvModule'); // Our custom CSV module
 
-// Define custom async authorizer function
-function myAuthorizer(username, password, callback) {
-    setTimeout(() => {
-        // Check if username is 'admin' and password is 'supersecret'
-        const userMatches = basicAuth.safeCompare(username, 'admin');
-        const passwordMatches = basicAuth.safeCompare(password, 'supersecret');
-        
-        // Call the callback function with the result
-        callback(null, userMatches && passwordMatches);
-    }, 0); // Simulating asynchronous operation
+// Async authorizer function
+async function authorizer(username, password, cb) {
+    const rowSeparator = "\r\n";
+    const cellSeparator = ";";
+    fs.readFile(
+        "users.csv",
+        "utf8",
+        (err, data) => {
+            if (err) {
+                console.error('Error reading users from CSV:', err);
+                return cb(err);
+            }
+
+            const rows = data.split(rowSeparator);
+            const [headerRow, ...contentRows] = rows;
+            const header = headerRow.split(cellSeparator);
+            const admins = contentRows.map(row => {
+                const cells = row.split(cellSeparator);
+                const admin = {
+                    username: cells[0],
+                    password: cells[1]
+                };
+
+                return admin;
+            });
+
+            console.log("admins", admins);
+            for (const admin of admins) {
+                console.log("admin", admin);
+                if (basicAuth.safeCompare(username, admin.username) && bcrypt.compare(password, admin.password)) {
+                    console.log("accept");
+                    return cb(null, true);
+                }
+            }
+
+            console.log("refus");
+            return cb(null, false);
+        });
+
 }
+
 
 // Create an Express application instance
 const app = express();
@@ -35,19 +66,21 @@ app.use(express.json());
 
 // Mount the custom async authorizer function for Basic Auth
 app.use(
-  basicAuth({
-    authorizer: myAuthorizer,
-    // Authorization schema needs to read a file: it is asynchronous
-    authorizeAsync: true,
-    challenge: true,
-  })
+    basicAuth({
+        // Final auth, based on a file with encrypted passwords
+        authorizer: authorizer,
+        // Our authorization schema needs to read a file: it is asynchronous
+        authorizeAsync: true,
+        challenge: true,
+    })
 );
 
 // Create an Express router for /api/* endpoints
 const apiRouter = express.Router();
 
 apiRouter.get('/students', (req, res) => {
-    const students = csvModule.getStudents(); // Get student data from CSV module
+    // Get student data from CSV module synchronously
+    const students = csvModule.readcsv('students_info.csv');
     res.json(students);
 });
 
@@ -62,7 +95,8 @@ app.use('/api', apiRouter);
 
 // Define HTML page rendering route
 app.get('/students', (req, res) => {
-    const students = csvModule.getStudents(); // Get student data from CSV module
+    // Get student data from CSV module synchronously
+    const students = csvModule.readcsv('students_info.csv');
     res.render('students', { students }); //Rendering to students.ejs view to display the form
 });
 
@@ -75,7 +109,7 @@ app.get('/students/create', (req, res) => {
 app.post('/students/create', (req, res) => {
     const { name, school } = req.body; // Extract student data from request body
     csvModule.addStudent(name, school); // Add student to CSV file using CSV module
-    res.redirect('/students/create');// Redirect back to the form to add another student
+    res.redirect('/students/create'); // Redirect back to the form to add another student
 });
 
 // Serve the home.html file at the root URL
