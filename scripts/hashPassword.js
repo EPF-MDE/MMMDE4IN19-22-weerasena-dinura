@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const bcrypt = require("bcrypt");
 const readline = require("readline").createInterface({
     input: process.stdin,
@@ -12,7 +11,7 @@ readline.question("What is your password? ", (password) => {
         if (err) {
             console.error("Could not encrypt your password!", err);
         }
-        console.log("Encrypted version of your password: ", hash);
+        console.log("Encrypted version of your password:", hash);
         process.exit(0); // process is a global variable defined by Node
     });
 });

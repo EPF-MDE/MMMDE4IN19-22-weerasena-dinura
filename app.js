@@ -10,41 +10,35 @@ const csvModule = require('./csvModule'); // Our custom CSV module
 async function authorizer(username, password, cb) {
     const rowSeparator = "\r\n";
     const cellSeparator = ";";
-    fs.readFile(
-        "users.csv",
-        "utf8",
-        (err, data) => {
-            if (err) {
-                console.error('Error reading users from CSV:', err);
-                return cb(err);
-            }
-
-            const rows = data.split(rowSeparator);
-            const [headerRow, ...contentRows] = rows;
-            const header = headerRow.split(cellSeparator);
-            const admins = contentRows.map(row => {
-                const cells = row.split(cellSeparator);
-                const admin = {
-                    username: cells[0],
-                    password: cells[1]
-                };
-
-                return admin;
-            });
-
-            console.log("admins", admins);
-            for (const admin of admins) {
-                console.log("admin", admin);
-                if (basicAuth.safeCompare(username, admin.username) && bcrypt.compare(password, admin.password)) {
-                    console.log("accept");
-                    return cb(null, true);
-                }
-            }
-
-            console.log("refus");
-            return cb(null, false);
+    try {
+        const data = await fs.promises.readFile("users.csv", "utf8");
+        const rows = data.split(rowSeparator);
+        const [headerRow, ...contentRows] = rows;
+        const header = headerRow.split(cellSeparator);
+        const admins = contentRows.map(row => {
+            const cells = row.split(cellSeparator);
+            const admin = {
+                username: cells[0],
+                password: cells[1]
+            };
+            return admin;
         });
-
+        console.log("admins", admins);
+        for (const admin of admins) {
+            console.log("admin", admin);
+            const usernameMatch = basicAuth.safeCompare(username, admin.username);
+            const passwordMatch = await bcrypt.compare(password, admin.password);
+            if (usernameMatch && passwordMatch) {
+                console.log("accept");
+                return cb(null, true);
+            }
+        }
+        console.log("Login Failed");
+        return cb(null, false);
+    } catch (error) {
+        console.error('Error reading users from CSV:', error);
+        return cb(error);
+    }
 }
 
 
@@ -118,7 +112,7 @@ app.get("/", (req, res) => {
 });
 
 // Define the port number on which the server will listen
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Start the Express server and listen for incoming connections on the specified port
 app.listen(PORT, () => {
