@@ -5,6 +5,7 @@ const basicAuth = require('express-basic-auth'); // Import express-basic-auth
 const fs = require('fs');
 const path = require('path');
 const csvModule = require('./csvModule'); // Our custom CSV module
+const cookieParser = require('cookie-parser'); // Import cookie-parser middleware
 
 // Async authorizer function
 async function authorizer(username, password, cb) {
@@ -18,8 +19,8 @@ async function authorizer(username, password, cb) {
         const admins = contentRows.map(row => {
             const cells = row.split(cellSeparator);
             const admin = {
-                username: cells[0],
-                password: cells[1]
+                username: cells[0], //storing the usernames in the csv
+                password: cells[1] //storing the passwords in the csv
             };
             return admin;
         });
@@ -68,6 +69,23 @@ app.use(
         challenge: true,
     })
 );
+
+app.use(cookieParser())
+
+
+// Define POST endpoint to handle login and set token cookie
+app.post('/api/login', (req, res) => {
+    // Set token cookie
+    const token = "FOOBAR";
+    const tokenCookie = {
+        path: "/",
+        httpOnly: true,
+        expires: new Date(Date.now() + 60 * 60 * 1000), // Expires in 1 hour
+    };
+    res.cookie("auth-token", token, tokenCookie);
+    res.send('Token cookie set successfully');
+});
+
 
 // Create an Express router for /api/* endpoints
 const apiRouter = express.Router();
