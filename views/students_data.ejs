@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Students Data</title>
+    <!-- Include D3.js -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <!-- Include C3.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.js"></script>
+    <!-- Include C3.js CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.20/c3.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <h1>Top 5 Student Stress Busters</h1>
+    <div id="chart"></div>
+
+    <script type="text/javascript">
+        d3.csv("/covid-19-students-delhi.csv").then((data) => {
+            console.log(data); // Log the loaded data to the console
+
+            // Initialize an empty object to store stress buster counts
+            const stressBustersCount = {};
+
+            // Loop through the data array
+            data.forEach((item) => {
+                // Extract stress buster name from data
+                const stressBusterName = item["Stress busters"];
+
+                // If stress buster name is not already in the object, initialize it to 0
+                if (typeof stressBustersCount[stressBusterName] === "undefined") {
+                    stressBustersCount[stressBusterName] = 0;
+                }
+
+                // Increment count for the stress buster
+                stressBustersCount[stressBusterName]++;
+            });
+
+            console.log(stressBustersCount); // Log the stress buster counts to the console
+
+            // Sort the stress busters by count in descending order
+            const sortedStressBusters = Object.keys(stressBustersCount).sort((a, b) => stressBustersCount[b] - stressBustersCount[a]);
+
+            // Select the top 5 stress busters
+            const top5StressBusters = sortedStressBusters.slice(0, 5);
+
+            // Define a counts variable for the top 5 stress busters
+            const counts = top5StressBusters.map((stressBuster) => stressBustersCount[stressBuster]);
+
+            // Generate the bar chart using C3.js
+            const chart = c3.generate({
+                bindto: "#chart",
+                data: {
+                    columns: [["Stress busters", ...counts]],
+                    type: "bar",
+                },
+                axis: {
+                    x: {
+                        type: "category",
+                        categories: top5StressBusters
+                    },
+                },
+            });
+
+        }).catch((error) => {
+            console.error("Error loading CSV file:", error); // Log any errors to the console
+        });
+    </script>
+</body>
+
+</html>

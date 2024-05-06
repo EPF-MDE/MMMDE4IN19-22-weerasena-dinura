@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Students</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+</head>
+
+<body>
+    <div class="header">
+        <h1>Students</h1>
+        <p class="long-text">Keep pushing forward, dear students, for every challenge you face today is molding you into 
+            the resilient, capable individual you're destined to become. Embrace each stumble as a stepping
+             stone, each setback as a setup for a remarkable comeback. Your journey is not defined by the obstacles
+              you encounter but by the strength and perseverance you exhibit in overcoming them. Believe in your abilities,
+               stay focused on your goals, and let your passion fuel your drive towards success. Remember, greatness lies
+                within you, waiting to be unleashed through dedication and hard work. So, rise above the doubts, defy the odds,
+                 and let your determination illuminate the path to your dreams. You've got this!
+        </p>
+    </div>
+    <div class="body-content">
+        <ul class="students">
+            <% students.forEach(function(student) { %>
+                <li><%= student.name %> | <%= student.school %></li>
+            <% }) %>
+        </ul>
+        
+    </div>
+    <button id="test">Click me</button>
+
+    <script src="/students.js"></script>
+
+</body>
+
+</html>
