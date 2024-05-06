@@ -19,13 +19,32 @@
         </p>
     </div>
     <div class="body-content">
-        <ul>
+        <ul class="students">
             <% students.forEach(function(student) { %>
                 <li><%= student.name %> | <%= student.school %></li>
             <% }) %>
         </ul>
         
     </div>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            // Create a link element
+            var createStudentLink = document.createElement('a');
+            
+            // Set the href attribute to /students/create
+            createStudentLink.href = '/students/create';
+            
+            // Set the text content of the link
+            createStudentLink.textContent = 'Create New Student';
+            
+            // Append the link to a suitable parent element in the DOM, such as the body
+            document.body.appendChild(createStudentLink);
+        });
+    </script>
 </body>
+
+
+
+
 
 </html>
