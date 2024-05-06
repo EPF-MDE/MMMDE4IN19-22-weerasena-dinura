@@ -26,6 +26,21 @@
         </ul>
         
     </div>
+    <button id="test">Click me</button>
+
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function (event) {
+            // Select the test button using querySelector
+            var testButton = document.querySelector('#test');
+            
+            // Add an event listener to the button for the click event
+            testButton.addEventListener('click', function() {
+                // Add alert("CLICKED!") in the listener
+                alert("CLICKED!");
+            });
+        });
+    </script>
+    
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function (event) {
             // Create a link element
@@ -41,6 +56,8 @@
             document.body.appendChild(createStudentLink);
         });
     </script>
+
+
 </body>
 
 
