@@ -37,11 +37,14 @@
 
             console.log(stressBustersCount); // Log the stress buster counts to the console
 
-            // Define a counts variable
-            const counts = Object.values(stressBustersCount);
+            // Sort the stress busters by count in descending order
+            const sortedStressBusters = Object.keys(stressBustersCount).sort((a, b) => stressBustersCount[b] - stressBustersCount[a]);
 
-            // Define a categories variable
-            const categories = Object.keys(stressBustersCount);
+            // Select the top 5 stress busters
+            const top5StressBusters = sortedStressBusters.slice(0, 5);
+
+            // Define a counts variable for the top 5 stress busters
+            const counts = top5StressBusters.map((stressBuster) => stressBustersCount[stressBuster]);
 
             // Generate the bar chart using C3.js
             const chart = c3.generate({
@@ -53,7 +56,7 @@
                 axis: {
                     x: {
                         type: "category",
-                        categories: categories
+                        categories: top5StressBusters
                     },
                 },
             });
