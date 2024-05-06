@@ -124,14 +124,6 @@ app.post('/students/create', (req, res) => {
     res.redirect('/students/create'); // Redirect back to the form to add another student
 });
 
-// Route to render student details
-app.get('/students/:id', (req, res) => {
-    const studentId = parseInt(req.params.id); // Convert id to integer
-    const students = csvModule.readcsv('students_info.csv');
-    const student = students[studentId]; // Get student based on id
-    res.render('student_details', { student });
-});
-
 
 // Serve the home.html file at the root URL
 app.get("/", (req, res) => {
@@ -144,9 +136,26 @@ app.get('/students/data', (req, res) => {
     res.render('students_data');
 });
 
+// Route to render student details
+app.get('/students/:id', (req, res) => {
+    const studentId = parseInt(req.params.id); // Convert id to integer
+    const students = csvModule.readcsv('students_info.csv');
+    const student = students[studentId]; // Get student based on id
+    res.render('student_details', { student });
+});
+
+//Route to modify student school
+app.post('/students/modify-school', (req, res) => {
+    const studentId = parseInt(req.params.id); // Convert id to integer
+    const newSchool = req.body.newSchool; // Get new school name from form
+    csvModule.updateSchool(studentId, newSchool, 'students_info.csv');  
+    res.redirect('/students');
+});
+
+
 
 // Define the port number on which the server will listen
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
 // Start the Express server and listen for incoming connections on the specified port
 app.listen(PORT, () => {

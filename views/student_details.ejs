@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 
@@ -10,6 +9,15 @@
     <h1>Student Details</h1>
     <p>Name: <%= student.name %></p>
     <p>School: <%= student.school %></p>
+
+    <h1>Update School</h1>
+    <form method="POST" action="/students/modify-school">
+        <label for="newSchool">New School:</label>
+        <input type="text" id="newSchool" name="newSchool" required>
+        <button type="submit">Update School</button>
+    </form>
+    <br><br>
+    <li><a href="/">Home</a></li>
 </body>
 
 </html>

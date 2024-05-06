@@ -12,8 +12,12 @@
 </head>
 
 <body>
-    <h1>Top 5 Student Stress Busters</h1>
-    <div id="chart"></div>
+    <h1>Top 5 Stress Busters</h1>
+    <div id="barChart"></div>
+    <h1>Health Issues During Lockdown</h1>
+    <div id="pieChart"></div>
+    <br><br>
+    <li><a href="/">Home</a></li>
 
     <script type="text/javascript">
         d3.csv("/covid-19-students-delhi.csv").then((data) => {
@@ -21,35 +25,43 @@
 
             // Initialize an empty object to store stress buster counts
             const stressBustersCount = {};
+            // Initialize an empty object to store health issue counts
+            const healthIssuesCount = {};
 
             // Loop through the data array
             data.forEach((item) => {
                 // Extract stress buster name from data
                 const stressBusterName = item["Stress busters"];
+                // Extract health issue from data
+                const healthIssue = item["Health issue during lockdown"];
 
                 // If stress buster name is not already in the object, initialize it to 0
                 if (typeof stressBustersCount[stressBusterName] === "undefined") {
                     stressBustersCount[stressBusterName] = 0;
                 }
+                // If health issue is not already in the object, initialize it to 0
+                if (typeof healthIssuesCount[healthIssue] === "undefined") {
+                    healthIssuesCount[healthIssue] = 0;
+                }
 
-                // Increment count for the stress buster
+                // Increment count for the stress buster and health issue
                 stressBustersCount[stressBusterName]++;
+                healthIssuesCount[healthIssue]++;
             });
 
             console.log(stressBustersCount); // Log the stress buster counts to the console
+            console.log(healthIssuesCount); // Log the health issue counts to the console
 
             // Sort the stress busters by count in descending order
             const sortedStressBusters = Object.keys(stressBustersCount).sort((a, b) => stressBustersCount[b] - stressBustersCount[a]);
-
             // Select the top 5 stress busters
             const top5StressBusters = sortedStressBusters.slice(0, 5);
-
             // Define a counts variable for the top 5 stress busters
             const counts = top5StressBusters.map((stressBuster) => stressBustersCount[stressBuster]);
 
-            // Generate the bar chart using C3.js
-            const chart = c3.generate({
-                bindto: "#chart",
+            // Generate the bar chart for stress busters using C3.js
+            const barChart = c3.generate({
+                bindto: "#barChart",
                 data: {
                     columns: [["Stress busters", ...counts]],
                     type: "bar",
@@ -59,6 +71,16 @@
                         type: "category",
                         categories: top5StressBusters
                     },
+                },
+            });
+
+
+            // Generate the pie chart for health issues using C3.js
+            const pieChart = c3.generate({
+                bindto: "#pieChart",
+                data: {
+                    columns: Object.entries(healthIssuesCount),
+                    type: "pie",
                 },
             });
 
