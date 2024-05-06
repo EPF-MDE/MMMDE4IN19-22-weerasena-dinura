@@ -124,6 +124,15 @@ app.post('/students/create', (req, res) => {
     res.redirect('/students/create'); // Redirect back to the form to add another student
 });
 
+// Route to render student details
+app.get('/students/:id', (req, res) => {
+    const studentId = parseInt(req.params.id); // Convert id to integer
+    const students = csvModule.readcsv('students_info.csv');
+    const student = students[studentId]; // Get student based on id
+    res.render('student_details', { student });
+});
+
+
 // Serve the home.html file at the root URL
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "./views/home.html"));
