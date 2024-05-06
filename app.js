@@ -129,6 +129,13 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "./views/home.html"));
 });
 
+
+// Route to render students_data.ejs
+app.get('/students/data', (req, res) => {
+    res.render('students_data');
+});
+
+
 // Define the port number on which the server will listen
 const PORT = process.env.PORT || 3001;
 
