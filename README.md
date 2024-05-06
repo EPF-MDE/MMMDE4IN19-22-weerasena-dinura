@@ -1,3 +1,4 @@
+## EXERCISE 0
 #### Who is the character of id 5 in the Rick and Morty API?
 "name": "Jerry Smith"
 
